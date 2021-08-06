@@ -45,3 +45,11 @@ WHich dataset (users/organizations/tickets)?
 
 ## Tidy up items
 - Config folder with paths to json files
+
+
+
+## Performance
+- CPU bound tasks often don't parallelise that well
+- Users don't care about the difference between 3ms and 200ms
+- Senior developers will be expected to measure and talk about tradeoffs and scaling
+- 
