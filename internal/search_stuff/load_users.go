@@ -7,11 +7,10 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/zendesk/melbourne_code_club_go/internal/search_stuff/types"
+	"github.com/zendesk/melbourne_code_club_go/internal/types"
 )
 
-func SomeFunc(ctx context.Context) error {
-	fmt.Printf("Hello World! Context - %+v", ctx)
+func LoadUsers(ctx context.Context, done chan bool) error {
 	jsonFile, err := os.Open("data/users.json")
 	if err != nil {
 		fmt.Printf("error reading file - %v", err)
@@ -27,6 +26,8 @@ func SomeFunc(ctx context.Context) error {
 		panic(err)
 	}
 
-	fmt.Printf("number of users - %d potato\n", len(users))
+	fmt.Println("number of users - ", len(users))
+
+	done <- true
 	return nil
 }

@@ -9,5 +9,13 @@ import (
 func main() {
 	ctx := context.Background()
 
-	_ = search_stuff.SomeFunc(ctx)
+	done := make(chan bool, 3)
+
+	go search_stuff.LoadUsers(ctx, done)
+	go search_stuff.LoadOrganizations(ctx, done)
+	go search_stuff.LoadTickets(ctx, done)
+
+	<-done
+	<-done
+	<-done
 }
