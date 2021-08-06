@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+make build
+./melbourne_code_club_go search_app
