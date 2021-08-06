@@ -1,0 +1,26 @@
+# github.com/inconshreveable/mousetrap v1.0.0
+github.com/inconshreveable/mousetrap
+# github.com/pkg/errors v0.9.1
+## explicit
+github.com/pkg/errors
+# github.com/sirupsen/logrus v1.8.1
+github.com/sirupsen/logrus
+# github.com/spf13/cobra v0.0.5
+## explicit
+github.com/spf13/cobra
+# github.com/spf13/pflag v1.0.3
+github.com/spf13/pflag
+# github.com/zendesk/zendesk_langsupport_go v0.0.9
+github.com/zendesk/zendesk_langsupport_go/errorcollector
+github.com/zendesk/zendesk_langsupport_go/responsewriter
+# github.com/zendesk/zendesk_logging_go v1.17.0
+github.com/zendesk/zendesk_logging_go
+# github.com/zendesk/zendesk_service_go v1.25.1
+## explicit
+github.com/zendesk/zendesk_service_go/service
+# golang.org/x/sync v0.0.0-20201207232520-09787c993a3a
+golang.org/x/sync/errgroup
+# golang.org/x/sys v0.0.0-20210423082822-04245dca01da
+golang.org/x/sys/internal/unsafeheader
+golang.org/x/sys/unix
+golang.org/x/sys/windows
