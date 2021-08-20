@@ -13,7 +13,7 @@ import (
 func main() {
 	ctx := context.Background()
 
-	_ = types.Database{
+	db := types.Database{
 		Users:         search_stuff.LoadUsers(ctx),
 		Organizations: search_stuff.LoadOrganizations(ctx),
 		Tickets:       search_stuff.LoadTickets(ctx),
@@ -25,7 +25,7 @@ func main() {
 	}
 	dataType := args[0]
 	field_name := args[1]
-	// query_value := args[2]
+	query_value := args[2]
 
 	acceptedTypes := []string{"users", "tickets", "organizations"}
 
@@ -38,5 +38,22 @@ func main() {
 		panic("wrong field name")
 	}
 
+	switch dataType {
+	case "tickets":
+		fmt.Println("results - ", search(db.Tickets, query_value))
+	default:
+		panic("Somehow we got here with the wrong datatype")
+	}
+
 	fmt.Println("args - ", args)
+}
+
+func search(tickets []types.Ticket, search_val string) []types.Ticket {
+	results := []types.Ticket{}
+	for _, ticket := range tickets {
+		if ticket.Id == search_val {
+			results = append(results, ticket)
+		}
+	}
+	return results
 }

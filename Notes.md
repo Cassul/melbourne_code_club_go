@@ -21,7 +21,8 @@ WHich dataset (users/organizations/tickets)?
 
 
 ## TODO
-- Print error if dataset is not correct
+- Allow for search of tickets by ID
+x Print error if dataset is not correct
 
 - performance
   - A list gives us O(n). N is the number of items in the list.
