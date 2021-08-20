@@ -22,6 +22,8 @@ type User struct {
 	Role           string   `json:"role"`
 }
 
+var UserFields []string = []string{"_id", "url", "external_id", "name", "alias", "created_at", "active", "verified", "shared", "locale", "timezone", "last_login_at", "email", "phone", "signature", "organization_id", "tags", "suspended", "role"}
+
 type Ticket struct {
 	Id             string   `json:"_id"`
 	Url            string   `json:"url"`
@@ -41,6 +43,8 @@ type Ticket struct {
 	Via            string   `json:"via"`
 }
 
+var TicketFields []string = []string{"_id", "url", "external_id", "created_at", "type", "subject", "desciption", "priority", "status", "submitter_id", "assignee_id", "organization_id", "tags", "has_incidents", "due_at", "via"}
+
 type Organization struct {
 	Id            int      `json:"_id"`
 	Url           string   `json:"url"`
@@ -51,4 +55,18 @@ type Organization struct {
 	SharedTickets bool     `json:"shared_tickets"`
 	Tags          []string `json:"tags"`
 	Details       string   `json:"details"`
+}
+
+var OrganizationFields []string = []string{"_id", "url", "external_id", "domain_names", "name", "created_at", "shared_tickets", "tags", "details"}
+
+var DataTypes map[string][]string = map[string][]string{
+	"users":         UserFields,
+	"organizations": OrganizationFields,
+	"tickets":       TicketFields,
+}
+
+type Database struct {
+	Users         []User
+	Tickets       []Ticket
+	Organizations []Organization
 }

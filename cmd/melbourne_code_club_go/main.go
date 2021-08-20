@@ -3,33 +3,40 @@ package main
 import (
 	"context"
 	"fmt"
-	"time"
+	"os"
 
 	"github.com/zendesk/melbourne_code_club_go/internal/search_stuff"
+	"github.com/zendesk/melbourne_code_club_go/internal/types"
+	"github.com/zendesk/melbourne_code_club_go/internal/util"
 )
 
 func main() {
 	ctx := context.Background()
 
-	start := time.Now()
+	_ = types.Database{
+		Users:         search_stuff.LoadUsers(ctx),
+		Organizations: search_stuff.LoadOrganizations(ctx),
+		Tickets:       search_stuff.LoadTickets(ctx),
+	}
 
-	done := make(chan bool, 3)
+	args := os.Args[1:]
+	if len(args) != 3 {
+		panic("number of arguments should equal 3")
+	}
+	dataType := args[0]
+	field_name := args[1]
+	// query_value := args[2]
 
-	go search_stuff.LoadUsers(ctx, done)
-	go search_stuff.LoadOrganizations(ctx, done)
-	go search_stuff.LoadTickets(ctx, done)
+	acceptedTypes := []string{"users", "tickets", "organizations"}
 
-	<-done
-	<-done
-	<-done
-	duration := time.Since(start)
-	fmt.Println("goroutine time - ", duration)
+	if !util.ContainsString(acceptedTypes, dataType) {
+		panic("wrong data type")
+	}
 
-	sequentialStart := time.Now()
-	search_stuff.LoadUsers(ctx, done)
-	search_stuff.LoadOrganizations(ctx, done)
-	search_stuff.LoadTickets(ctx, done)
-	sequentialDuration := time.Since(sequentialStart)
-	fmt.Println("sequential time - ", sequentialDuration)
+	acceptedFields := types.DataTypes[dataType]
+	if !util.ContainsString(acceptedFields, field_name) {
+		panic("wrong field name")
+	}
 
+	fmt.Println("args - ", args)
 }

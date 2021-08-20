@@ -10,11 +10,10 @@ import (
 	"github.com/zendesk/melbourne_code_club_go/internal/types"
 )
 
-func LoadUsers(ctx context.Context, done chan bool) error {
+func LoadUsers(ctx context.Context) []types.User {
 	jsonFile, err := os.Open("data/users.json")
 	if err != nil {
-		fmt.Printf("error reading file - %v", err)
-		return err
+		panic(err)
 	}
 
 	byteValue, _ := ioutil.ReadAll(jsonFile)
@@ -28,6 +27,5 @@ func LoadUsers(ctx context.Context, done chan bool) error {
 
 	fmt.Println("number of users - ", len(users))
 
-	done <- true
-	return nil
+	return users
 }

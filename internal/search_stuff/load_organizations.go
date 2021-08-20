@@ -10,11 +10,10 @@ import (
 	"github.com/zendesk/melbourne_code_club_go/internal/types"
 )
 
-func LoadOrganizations(ctx context.Context, done chan bool) error {
+func LoadOrganizations(ctx context.Context) []types.Organization {
 	jsonFile, err := os.Open("data/organizations.json")
 	if err != nil {
-		fmt.Printf("error reading file - %v", err)
-		return err
+		panic(err)
 	}
 
 	byteValue, _ := ioutil.ReadAll(jsonFile)
@@ -27,6 +26,6 @@ func LoadOrganizations(ctx context.Context, done chan bool) error {
 	}
 
 	fmt.Println("number of organizations - ", len(organizations))
-	done <- true
-	return nil
+
+	return organizations
 }

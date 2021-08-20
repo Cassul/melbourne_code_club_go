@@ -10,11 +10,10 @@ import (
 	"github.com/zendesk/melbourne_code_club_go/internal/types"
 )
 
-func LoadTickets(ctx context.Context, done chan bool) error {
+func LoadTickets(ctx context.Context) []types.Ticket {
 	jsonFile, err := os.Open("data/tickets.json")
 	if err != nil {
-		fmt.Printf("error reading file - %v", err)
-		return err
+		panic(err)
 	}
 
 	byteValue, _ := ioutil.ReadAll(jsonFile)
@@ -27,6 +26,6 @@ func LoadTickets(ctx context.Context, done chan bool) error {
 	}
 
 	fmt.Println("number of tickets - ", len(tickets))
-	done <- true
-	return nil
+
+	return tickets
 }
