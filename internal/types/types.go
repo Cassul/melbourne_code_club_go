@@ -70,3 +70,33 @@ type Database struct {
 	Tickets       []Ticket
 	Organizations []Organization
 }
+
+type Query struct {
+	Dataset string
+	Field   string
+	Value   interface{}
+}
+
+type Record interface {
+	KeysForIndex() []Query
+}
+
+type Index map[Query]Record
+
+func (t Ticket) KeysForIndex() []Query {
+	return []Query{
+		{Dataset: "tickets", Field: "_id", Value: t.Id},
+	}
+}
+
+func (u User) KeysForIndex() []Query {
+	return []Query{
+		{Dataset: "users", Field: "_id", Value: u.Id},
+	}
+}
+
+func (o Organization) KeysForIndex() []Query {
+	return []Query{
+		{Dataset: "organizations", Field: "_id", Value: o.Id},
+	}
+}

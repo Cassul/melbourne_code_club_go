@@ -15,8 +15,9 @@ func main() {
 	args := os.Args[1:]
 
 	validate(args)
-	db := loadData(ctx)
-	searchData(db, args)
+	query := types.Query{Dataset: args[0], Field: args[1], Value: args[2]}
+	index := loadAndIndexData(ctx)
+	searchData(index, query)
 }
 
 func search(tickets []types.Ticket, search_val string) []types.Ticket {
@@ -48,23 +49,40 @@ func validate(args []string) {
 	}
 }
 
-func loadData(ctx context.Context) types.Database {
-	return types.Database{
-		Users:         search_stuff.LoadUsers(ctx),
-		Organizations: search_stuff.LoadOrganizations(ctx),
-		Tickets:       search_stuff.LoadTickets(ctx),
+func loadAndIndexData(ctx context.Context) types.Index {
+	var records []types.Record
+
+	users := search_stuff.LoadUsers(ctx)
+	organizations := search_stuff.LoadOrganizations(ctx)
+	tickets := search_stuff.LoadTickets(ctx)
+
+	// Covariance
+	// Contravariance
+
+	for _, u := range users {
+		records = append(records, (types.Record(u)))
 	}
+
+	for _, u := range organizations {
+		records = append(records, (types.Record(u)))
+	}
+
+	for _, u := range tickets {
+		records = append(records, (types.Record(u)))
+	}
+
+	index := map[types.Query]types.Record{}
+
+	for _, record := range records {
+		for _, query := range record.KeysForIndex() {
+			index[query] = record
+		}
+	}
+
+	return index
 }
 
-func searchData(db types.Database, args []string) {
-	dataType := args[0]
-	// fieldName := args[1]
-	query_value := args[2]
-
-	switch dataType {
-	case "tickets":
-		fmt.Println("results - ", search(db.Tickets, query_value))
-	default:
-		panic("Somehow we got here with the wrong datatype")
-	}
+func searchData(index types.Index, query types.Query) {
+	result := index[query]
+	fmt.Println("Result: ", result)
 }

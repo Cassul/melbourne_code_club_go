@@ -21,8 +21,21 @@ WHich dataset (users/organizations/tickets)?
 
 
 ## TODO
-- Allow for search of tickets by ID
+- Index the data
+  x Define the Query struct
+  x Define a record interface
+  x Have the records return their own query objects
+  - Update search code to use index
+- Try a parallel linear search
+- Expand search to other fields
+- Expand search to other datasets
+
+- Looping search UI
+- Format the results
+- Handle related data
+
 x Print error if dataset is not correct
+x Allow for search of tickets by ID
 
 - performance
   - A list gives us O(n). N is the number of items in the list.
@@ -116,3 +129,76 @@ dataset []types.Ticket
 dataset []types.User
 dataset []types.Organization
 
+
+
+
+
+validating the user input
+loading the data
+performing the search
+
+
+
+# Indexing
+
+lookup_in_index(index, query)
+
+Inputs
+
+index = 
+
+map[string]map[string]map[string][]Record
+    dataset    field      value
+
+{"user.id.1": [User()]}
+
+"user.name"
+
+"user.user.name.1"
+
+map[[]string]Record
+
+{
+  ["user", "name", "Logan Campbell"]:
+  [User(...)]
+}
+
+map[Query]Record
+
+{
+  Query(dataset: "user", field: "name", value: "Logan Campbell"):
+  [User(...)]
+}
+
+
+{ Users
+    "id": 
+      1: [Users(....)],
+      ...id: [Users(...)]
+    "name":
+        "Logan Campbell": [Users(....)], // Name
+        "Logan Campbell": [Users(....)], // Fathers name
+  Organizations
+
+}
+
+{1: [Organization(...)]}
+
+{1: [Ticket(...)]}
+
+query = {dataType: "users",
+fieldName: "_id",
+queryValue: 1}
+
+query = {dataType: "users",
+fieldName: "name",
+queryValue: "Logan Campbell"}
+
+
+query = {dataType: "organizations",
+fieldName: "_id",
+queryValue: 1}
+
+
+Output
+[] Ticket
