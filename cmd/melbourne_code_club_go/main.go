@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 
@@ -15,7 +16,12 @@ func main() {
 	args := os.Args[1:]
 
 	validate(args)
-	query := types.Query{Dataset: args[0], Field: args[1], Value: args[2]}
+
+	var value interface{}
+	json.Unmarshal([]byte(args[2]), &value)
+
+	query := types.Query{Dataset: args[0], Field: args[1], Value: value}
+
 	index := loadAndIndexData(ctx)
 	searchData(index, query)
 }
@@ -56,9 +62,6 @@ func loadAndIndexData(ctx context.Context) types.Index {
 	organizations := search_stuff.LoadOrganizations(ctx)
 	tickets := search_stuff.LoadTickets(ctx)
 
-	// Covariance
-	// Contravariance
-
 	for _, u := range users {
 		records = append(records, (types.Record(u)))
 	}
@@ -75,7 +78,13 @@ func loadAndIndexData(ctx context.Context) types.Index {
 
 	for _, record := range records {
 		for _, query := range record.KeysForIndex() {
+			// If there's no existing record then add one in a slice
+			// If there is already a record then add a new record to the existing slice
 			index[query] = record
+
+			var index map[Query]types.Record
+			var index map[Query][]types.Record
+			// Multimap
 		}
 	}
 

@@ -21,14 +21,15 @@ WHich dataset (users/organizations/tickets)?
 
 
 ## TODO
-- Index the data
+x Index the data
   x Define the Query struct
   x Define a record interface
   x Have the records return their own query objects
-  - Update search code to use index
+  x Build the index
+  x Update search code to use index
 - Try a parallel linear search
 - Expand search to other fields
-- Expand search to other datasets
+x Expand search to other datasets
 
 - Looping search UI
 - Format the results
