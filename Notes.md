@@ -31,6 +31,8 @@ x Index the data
 - Expand search to other fields
 x Expand search to other datasets
 
+- Duplicate results bug
+
 - Looping search UI
 - Format the results
 - Handle related data

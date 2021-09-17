@@ -55,7 +55,7 @@ func validate(args []string) {
 	}
 }
 
-func loadAndIndexData(ctx context.Context) types.Index {
+func loadAndIndexData(ctx context.Context) map[types.Query][]types.Record {
 	var records []types.Record
 
 	users := search_stuff.LoadUsers(ctx)
@@ -74,24 +74,22 @@ func loadAndIndexData(ctx context.Context) types.Index {
 		records = append(records, (types.Record(u)))
 	}
 
-	index := map[types.Query]types.Record{}
+	index := map[types.Query][]types.Record{}
 
 	for _, record := range records {
 		for _, query := range record.KeysForIndex() {
-			// If there's no existing record then add one in a slice
-			// If there is already a record then add a new record to the existing slice
-			index[query] = record
-
-			var index map[Query]types.Record
-			var index map[Query][]types.Record
-			// Multimap
+			if len(index[query]) > 0 {
+				index[query] = append(index[query], record)
+			} else {
+				index[query] = []types.Record{record}
+			}
 		}
 	}
 
 	return index
 }
 
-func searchData(index types.Index, query types.Query) {
+func searchData(index map[types.Query][]types.Record, query types.Query) {
 	result := index[query]
 	fmt.Println("Result: ", result)
 }
