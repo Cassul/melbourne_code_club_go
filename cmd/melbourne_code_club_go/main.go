@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/manifoldco/promptui"
 
@@ -14,6 +15,12 @@ import (
 func main() {
 	ctx := context.Background()
 
+	query := promptUser()
+	index := loadAndIndexData(ctx)
+	searchData(index, query)
+}
+
+func promptUser() types.Query {
 	dataSetPrompt := promptui.Select{
 		Label: "Select Data Type",
 		Items: []string{"tickets", "organizations", "users"},
@@ -37,17 +44,13 @@ func main() {
 	inputValue, err := inputValuePrompt.Run()
 
 	if err != nil {
-		fmt.Printf("Prompt failed %v\n", err)
-		return
+		panic(fmt.Sprintf("Prompt failed, err - %v", err))
 	}
 
 	var value interface{}
 	json.Unmarshal([]byte(inputValue), &value)
 
-	query := types.Query{Dataset: dataSet, Field: field, Value: value}
-
-	index := loadAndIndexData(ctx)
-	searchData(index, query)
+	return types.Query{Dataset: dataSet, Field: field, Value: value}
 }
 
 func search(tickets []types.Ticket, search_val string) []types.Ticket {
@@ -68,27 +71,65 @@ func validateSearchQuery(searchQuery string) error {
 }
 
 func loadAndIndexData(ctx context.Context) map[types.Query][]types.Record {
-	var records []types.Record
+	records := make(chan types.Record, 1)
+	done := make(chan bool, 3)
 
-	users := search_stuff.LoadUsers(ctx)
-	organizations := search_stuff.LoadOrganizations(ctx)
-	tickets := search_stuff.LoadTickets(ctx)
+	// Concurrency primitive: Countdown latch
+	// new lantch: 3
 
-	for _, u := range users {
-		records = append(records, (types.Record(u)))
-	}
+	go func() {
+		fmt.Println("Going to load users")
+		users := search_stuff.LoadUsers(ctx)
 
-	for _, u := range organizations {
-		records = append(records, (types.Record(u)))
-	}
+		for _, u := range users {
+			fmt.Println("Loaded a users")
+			time.Sleep(100 * time.Millisecond)
+			records <- types.Record(u)
+		}
+		fmt.Println("Loaded all users")
 
-	for _, u := range tickets {
-		records = append(records, (types.Record(u)))
-	}
+		done <- true
+	}()
+
+	go func() {
+		fmt.Println("Going to load organizations")
+		organizations := search_stuff.LoadOrganizations(ctx)
+
+		for _, u := range organizations {
+			fmt.Println("Loaded an organization")
+			time.Sleep(100 * time.Millisecond)
+			records <- types.Record(u)
+		}
+		fmt.Println("Loaded all organizations")
+
+		done <- true
+	}()
+
+	go func() {
+		fmt.Println("Going to load tickets")
+		tickets := search_stuff.LoadTickets(ctx)
+
+		for _, u := range tickets {
+			fmt.Println("Loaded a ticket")
+			time.Sleep(100 * time.Millisecond)
+			records <- types.Record(u)
+		}
+		fmt.Println("Loaded all tickets")
+
+		done <- true
+	}()
+
+	go func() {
+		<-done
+		<-done
+		<-done
+		close(records)
+	}()
 
 	index := map[types.Query][]types.Record{}
 
-	for _, record := range records {
+	fmt.Println("Going to start looping through records")
+	for record := range records {
 		for _, query := range record.KeysForIndex() {
 			if len(index[query]) > 0 {
 				index[query] = append(index[query], record)
@@ -97,6 +138,14 @@ func loadAndIndexData(ctx context.Context) map[types.Query][]types.Record {
 			}
 		}
 	}
+
+	fmt.Println("I'm guessing we never get here")
+
+	// First thing printed could be:
+	// - Going to load users
+	// - Going to load tickets
+	// - Going to load organizations
+	// - Going to start looping through records
 
 	return index
 }

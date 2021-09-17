@@ -27,6 +27,7 @@ x Index the data
   x Have the records return their own query objects
   x Build the index
   x Update search code to use index
+- Investigate external_id search failure
 - Try a parallel linear search
 - Expand search to other fields
 x Expand search to other datasets
@@ -205,3 +206,53 @@ queryValue: 1}
 
 Output
 [] Ticket
+
+
+## Concurrency
+
+- Find an alternative to Marshall that gives us each record as it's parsed
+- Spin up multiple goroutines for each dataset
+- Create goroutines for indexing chunks
+
+Prompts user
+Loads the json files
+ - Each go routine loads one file
+ - 3 goroutines
+ - Can we get access to each record as it's parsed
+Indexes the files as they're loaded
+  - Each goroutine merges data types into one record
+  - Indexes
+
+
+  - Options 1 (Lets do this)
+    - We re-use the load file goroutines
+    - Each one of those adds the loaded data into a records slice
+    - Then a seperate piece of code reads the records slice
+    - It spins up multiple goroutines and each of them pulls a record from the slice and inserts it into the index
+      - Sleeps happen concurrently
+      - Block each other on access to the index
+      - Block is insignificant compared to sleep
+
+  - Option 2
+    - re use load file goroutines, they write to a big records slice
+    - New code splits up the records slice
+    - A handful of goroutines each work on a piece of the records slice
+    - Each writes to their own index
+    - Then we can have new code that receives those indexes and merges them together
+
+  - Options 3
+    - Load data and push it into a records channel
+    - Have an indexer merge everything from that channel into an index map
+
+Does the search
+  - O(1)
+
+
+  - How do we now when we can search?
+    - Everything must have been indexed for the dataset we're searching
+Prints the results
+  - Concurrency bad
+
+
+
+
