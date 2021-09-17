@@ -4,23 +4,47 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"os"
+
+	"github.com/manifoldco/promptui"
 
 	"github.com/zendesk/melbourne_code_club_go/internal/search_stuff"
 	"github.com/zendesk/melbourne_code_club_go/internal/types"
-	"github.com/zendesk/melbourne_code_club_go/internal/util"
 )
 
 func main() {
 	ctx := context.Background()
-	args := os.Args[1:]
 
-	validate(args)
+	dataSetPrompt := promptui.Select{
+		Label: "Select Data Type",
+		Items: []string{"tickets", "organizations", "users"},
+	}
+
+	_, dataSet, err := dataSetPrompt.Run()
+
+	acceptedFields := types.DataTypes[dataSet]
+
+	fieldPrompt := promptui.Select{
+		Label: "Select Field",
+		Items: acceptedFields,
+	}
+	_, field, err := fieldPrompt.Run()
+
+	inputValuePrompt := promptui.Prompt{
+		Label:    "What are you searching for, dear User?",
+		Validate: validateSearchQuery,
+	}
+
+	inputValue, err := inputValuePrompt.Run()
+
+	if err != nil {
+		fmt.Printf("Prompt failed %v\n", err)
+		return
+	}
 
 	var value interface{}
-	json.Unmarshal([]byte(args[2]), &value)
+	json.Unmarshal([]byte(inputValue), &value)
 
-	query := types.Query{Dataset: args[0], Field: args[1], Value: value}
+	query := types.Query{Dataset: dataSet, Field: field, Value: value}
 
 	index := loadAndIndexData(ctx)
 	searchData(index, query)
@@ -36,23 +60,11 @@ func search(tickets []types.Ticket, search_val string) []types.Ticket {
 	return results
 }
 
-func validate(args []string) {
-	if len(args) != 3 {
-		panic("number of arguments should equal 3")
+func validateSearchQuery(searchQuery string) error {
+	if !json.Valid([]byte(searchQuery)) {
+		return fmt.Errorf("Invalid search query, must be json")
 	}
-	dataType := args[0]
-	fieldName := args[1]
-
-	acceptedTypes := []string{"users", "tickets", "organizations"}
-
-	if !util.ContainsString(acceptedTypes, dataType) {
-		panic("wrong data type")
-	}
-
-	acceptedFields := types.DataTypes[dataType]
-	if !util.ContainsString(acceptedFields, fieldName) {
-		panic("wrong field name")
-	}
+	return nil
 }
 
 func loadAndIndexData(ctx context.Context) map[types.Query][]types.Record {
