@@ -9,7 +9,7 @@ run:
 	go run cmd/melbourne_code_club_go/main.go
 
 build:
-	go build "$(MAIN_PKG)"
+	go build -race "$(MAIN_PKG)"
 
 ensure_deps:
 	go mod tidy
