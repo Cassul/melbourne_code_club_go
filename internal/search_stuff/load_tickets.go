@@ -3,7 +3,6 @@ package search_stuff
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"os"
 
@@ -24,8 +23,6 @@ func LoadTickets(ctx context.Context) []types.Ticket {
 	if err != nil {
 		panic(err)
 	}
-
-	fmt.Println("number of tickets - ", len(tickets))
 
 	return tickets
 }

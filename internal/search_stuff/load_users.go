@@ -3,7 +3,6 @@ package search_stuff
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"os"
 
@@ -24,8 +23,6 @@ func LoadUsers(ctx context.Context) []types.User {
 	if err != nil {
 		panic(err)
 	}
-
-	fmt.Println("number of users - ", len(users))
 
 	return users
 }

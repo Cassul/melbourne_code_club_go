@@ -3,7 +3,6 @@ package search_stuff
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"os"
 
@@ -24,8 +23,6 @@ func LoadOrganizations(ctx context.Context) []types.Organization {
 	if err != nil {
 		panic(err)
 	}
-
-	fmt.Println("number of organizations - ", len(organizations))
 
 	return organizations
 }

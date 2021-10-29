@@ -77,40 +77,31 @@ func loadAndIndexData(ctx context.Context) map[types.Query][]types.Record {
 	wg.Add(3)
 
 	go func() {
-		fmt.Println("Going to load users")
 		users := search_stuff.LoadUsers(ctx)
 
 		for _, u := range users {
-			fmt.Println("Loaded a user")
 			records <- types.Record(u)
 		}
-		fmt.Println("Loaded all users")
 
 		wg.Done()
 	}()
 
 	go func() {
-		fmt.Println("Going to load organizations")
 		organizations := search_stuff.LoadOrganizations(ctx)
 
 		for _, u := range organizations {
-			fmt.Println("Loaded an organization")
 			records <- types.Record(u)
 		}
-		fmt.Println("Loaded all organizations")
 
 		wg.Done()
 	}()
 
 	go func() {
-		fmt.Println("Going to load tickets")
 		tickets := search_stuff.LoadTickets(ctx)
 
 		for _, u := range tickets {
-			fmt.Println("Loaded a ticket")
 			records <- types.Record(u)
 		}
-		fmt.Println("Loaded all tickets")
 
 		wg.Done()
 	}()
@@ -121,7 +112,6 @@ func loadAndIndexData(ctx context.Context) map[types.Query][]types.Record {
 		close(records)
 	}()
 
-	fmt.Println("Going to start looping through records")
 	for record := range records {
 		for _, query := range record.KeysForIndex() {
 			if len(index[query]) > 0 {
@@ -136,7 +126,6 @@ func loadAndIndexData(ctx context.Context) map[types.Query][]types.Record {
 }
 
 func searchData(index map[types.Query][]types.Record, query types.Query) {
-	fmt.Println(index[query], query)
 	result := index[query]
 	fmt.Println("Result: ", result)
 }

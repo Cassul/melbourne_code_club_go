@@ -27,8 +27,8 @@ x Index the data
   x Have the records return their own query objects
   x Build the index
   x Update search code to use index
-- Implement our own low-level waitGroups
-- Investigate external_id search failure
+x Implement our own low-level waitGroups
+x Investigate external_id search failure
 - Try a parallel linear search
 - Expand search to other fields
 x Expand search to other datasets

@@ -84,7 +84,7 @@ type Record interface {
 type Index map[Query]Record
 
 func (t Ticket) KeysForIndex() []Query {
-	return []Query{
+	query := []Query{
 		{Dataset: "tickets", Field: "_id", Value: t.Id},
 		{Dataset: "tickets", Field: "url", Value: t.Url},
 		{Dataset: "tickets", Field: "external_id", Value: t.ExternalId},
@@ -97,15 +97,20 @@ func (t Ticket) KeysForIndex() []Query {
 		{Dataset: "tickets", Field: "submitter_id", Value: t.SubmitterId},
 		{Dataset: "tickets", Field: "assignee_id", Value: t.AssigneeId},
 		{Dataset: "tickets", Field: "organization_id", Value: t.OrganizationId},
-		// {Dataset: "tickets", Field: "tags", Value: t.Tags},
 		{Dataset: "tickets", Field: "has_incidents", Value: t.HasIncidents},
 		{Dataset: "tickets", Field: "due_at", Value: t.DueAt},
 		{Dataset: "tickets", Field: "via", Value: t.Via},
 	}
+
+	for _, tag := range t.Tags {
+		query = append(query, Query{Dataset: "tickets", Field: "tags", Value: tag})
+	}
+
+	return query
 }
 
 func (u User) KeysForIndex() []Query {
-	return []Query{
+	query := []Query{
 		{Dataset: "users", Field: "_id", Value: u.Id},
 		{Dataset: "users", Field: "url", Value: u.Url},
 		{Dataset: "users", Field: "external_id", Value: u.ExternalId},
@@ -122,22 +127,35 @@ func (u User) KeysForIndex() []Query {
 		{Dataset: "users", Field: "phone", Value: u.Phone},
 		{Dataset: "users", Field: "signature", Value: u.Signature},
 		{Dataset: "users", Field: "organization_id", Value: u.OrganizationId},
-		// {Dataset: "users", Field: "tags", Value: u.Tags},
 		{Dataset: "users", Field: "suspended", Value: u.Suspended},
 		{Dataset: "users", Field: "role", Value: u.Role},
 	}
+
+	for _, tag := range u.Tags {
+		query = append(query, Query{Dataset: "users", Field: "tags", Value: tag})
+	}
+
+	return query
 }
 
 func (o Organization) KeysForIndex() []Query {
-	return []Query{
+	query := []Query{
 		{Dataset: "organizations", Field: "_id", Value: o.Id},
 		{Dataset: "organizations", Field: "url", Value: o.Url},
 		{Dataset: "organizations", Field: "external_id", Value: o.ExternalId},
-		// {Dataset: "organizations", Field: "domain_names", Value: o.DomainNames},
 		{Dataset: "organizations", Field: "name", Value: o.Name},
 		{Dataset: "organizations", Field: "created_at", Value: o.CreatedAt},
 		{Dataset: "organizations", Field: "shared_tickets", Value: o.SharedTickets},
-		// {Dataset: "organizations", Field: "tags", Value: o.Tags},
 		{Dataset: "organizations", Field: "details", Value: o.Details},
 	}
+
+	for _, tag := range o.Tags {
+		query = append(query, Query{Dataset: "organizations", Field: "tags", Value: tag})
+	}
+
+	for _, tag := range o.DomainNames {
+		query = append(query, Query{Dataset: "organizations", Field: "domain_names", Value: tag})
+	}
+
+	return query
 }
