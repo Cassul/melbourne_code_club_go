@@ -81,7 +81,7 @@ type Record interface {
 	KeysForIndex() []Query
 }
 
-type Index map[Query]Record
+type Index map[Query][]Record
 
 func (t Ticket) KeysForIndex() []Query {
 	query := []Query{

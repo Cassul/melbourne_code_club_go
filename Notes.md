@@ -30,7 +30,7 @@ x Index the data
 x Implement our own low-level waitGroups
 x Investigate external_id search failure
 - Try a parallel linear search
-- Expand search to other fields
+x Expand search to other fields
 x Expand search to other datasets
 
 - Duplicate results bug
@@ -54,14 +54,14 @@ x Allow for search of tickets by ID
   - Goroutines. Advaned stuff that is too hard to maintain for normal code.
     - Channels
     - Error groups?
-- Create types folder to represent those data structures and use them for parsing
-- Go through challenge
+x Create types folder to represent those data structures and use them for parsing
+x Go through challenge
 x Print error if not enough arguments given
 x Maybe: Try indexing using goroutines. Benchmark.
 x Print the arguments to the program
-- Get help flags working
+x Get help flags working
 - Listen for signal interupted and kill and tidily close out goroutines
-- Implement the loading using goroutines
+x Implement the loading using goroutines
 
 ## Interface
 ./search users _id 1
@@ -71,8 +71,8 @@ field := os.Args[2] // "_id"
 
 
 ## Goal
-- Print how many users we have
-- Repeat for tickets and organizations
+x Print how many users we have
+x Repeat for tickets and organizations
 
 ## Tidy up items
 - Config folder with paths to json files
@@ -212,7 +212,7 @@ Output
 ## Concurrency
 
 - Find an alternative to Marshall that gives us each record as it's parsed
-- Spin up multiple goroutines for each dataset
+x Spin up multiple goroutines for each dataset
 - Create goroutines for indexing chunks
 
 Prompts user

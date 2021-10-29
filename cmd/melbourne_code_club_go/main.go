@@ -14,10 +14,23 @@ import (
 
 func main() {
 	ctx := context.Background()
+	indexChannel := make(chan types.Index)
+	var index types.Index
+	var syncOnce sync.Once
+	// Do this in the background
+	go func() {
+		indexChannel <- loadAndIndexData(ctx)
+	}()
 
-	query := promptUser()
-	index := loadAndIndexData(ctx)
-	searchData(index, query)
+	// Loop these two
+	for {
+		query := promptUser()
+		syncOnce.Do(
+			func() {
+				index = <-indexChannel
+			})
+		searchData(index, query)
+	}
 }
 
 func promptUser() types.Query {

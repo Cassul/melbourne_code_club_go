@@ -3,7 +3,7 @@ COVERAGE_FILE_NAME := coverage.out
 TEST_TARGET ?= ./...
 TEST_FLAGS := -race -coverpkg=./...  --coverprofile=$(COVERAGE_FILE_NAME)
 
-default: build
+default: run
 
 run:
 	go run cmd/melbourne_code_club_go/main.go
