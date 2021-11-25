@@ -1,5 +1,7 @@
 package types
 
+import "fmt"
+
 type User struct {
 	Id             float64  `json:"_id"`
 	Url            string   `json:"url"`
@@ -78,6 +80,8 @@ type Query struct {
 }
 
 type Record interface {
+	Print(Index)
+	PrintBasicInfo()
 	KeysForIndex() []Query
 }
 
@@ -109,6 +113,56 @@ func (t Ticket) KeysForIndex() []Query {
 	return query
 }
 
+func (t Ticket) Print(index Index) {
+	// TODO: Potentially a bug. What if the associated doesn't exist?
+	submitter := findOne(index, Query{Dataset: "users", Field: "_id", Value: t.SubmitterId})
+	assignee := findOne(index, Query{Dataset: "users", Field: "_id", Value: t.AssigneeId})
+	organization := findOne(index, Query{Dataset: "organizations", Field: "_id", Value: t.OrganizationId})
+
+	fmt.Println("## Ticket.")
+	t.PrintBasicInfo()
+	t.PrintAssociatedRecords(submitter, assignee, organization)
+}
+
+func findOne(index Index, query Query) Record {
+	if index[query] != nil {
+		return index[query][0]
+	}
+	return nil
+}
+
+func (t Ticket) PrintBasicInfo() {
+	fmt.Println("          _id: ", t.Id)
+	fmt.Println("          url: ", t.Url)
+	fmt.Println("  external_id: ", t.ExternalId)
+	fmt.Println("   created_at: ", t.CreatedAt)
+	fmt.Println("         type: ", t.Type)
+	fmt.Println("      subject: ", t.Subject)
+	fmt.Println("   desciption: ", t.Description)
+	fmt.Println("     priority: ", t.Priority)
+	fmt.Println("       status: ", t.Status)
+	fmt.Println("has_incidents: ", t.HasIncidents)
+	fmt.Println("       due_at: ", t.DueAt)
+	fmt.Println("          via: ", t.Via)
+	fmt.Println("")
+}
+
+func (t Ticket) PrintAssociatedRecords(submitter Record, assignee Record, organization Record) {
+	//sumitter
+	fmt.Println("### Submitter.")
+	submitter.PrintBasicInfo()
+
+	//assignee
+	fmt.Println("### Assignee.")
+	fmt.Println(assignee)
+	fmt.Println("")
+
+	//organization
+	fmt.Println("### Organization.")
+	fmt.Println(organization)
+	fmt.Println("")
+}
+
 func (u User) KeysForIndex() []Query {
 	query := []Query{
 		{Dataset: "users", Field: "_id", Value: u.Id},
@@ -138,6 +192,32 @@ func (u User) KeysForIndex() []Query {
 	return query
 }
 
+func (u User) Print(index Index) {
+	fmt.Println("I am a user.")
+}
+
+func (u User) PrintBasicInfo() {
+	fmt.Println("           _id: ", u.Id)
+	fmt.Println("           url: ", u.Url)
+	fmt.Println("   external_id: ", u.ExternalId)
+	fmt.Println("    created_at: ", u.CreatedAt)
+	fmt.Println("          type: ", u.Name)
+	fmt.Println("       subject: ", u.Alias)
+	fmt.Println("    desciption: ", u.Active)
+	fmt.Println("      priority: ", u.Verified)
+	fmt.Println("        status: ", u.Shared)
+	fmt.Println(" has_incidents: ", u.Locale)
+	fmt.Println("        due_at: ", u.Timezone)
+	fmt.Println("         email: ", u.Email)
+	fmt.Println(" last_login_at: ", u.LastLoginAt)
+	fmt.Println("         phone: ", u.Phone)
+	fmt.Println("     signature: ", u.Signature)
+	fmt.Println("          tags: ", u.Tags)
+	fmt.Println("     suspended: ", u.Suspended)
+	fmt.Println("          role: ", u.Role)
+	fmt.Println("")
+}
+
 func (o Organization) KeysForIndex() []Query {
 	query := []Query{
 		{Dataset: "organizations", Field: "_id", Value: o.Id},
@@ -159,3 +239,9 @@ func (o Organization) KeysForIndex() []Query {
 
 	return query
 }
+
+func (u Organization) Print(index Index) {
+	fmt.Println("I am a organization.")
+}
+
+func (o Organization) PrintBasicInfo() {}

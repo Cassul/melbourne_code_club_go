@@ -29,14 +29,12 @@ x Index the data
   x Update search code to use index
 x Implement our own low-level waitGroups
 x Investigate external_id search failure
-- Try a parallel linear search
+x Try a parallel linear search
 x Expand search to other fields
 x Expand search to other datasets
 
-- Duplicate results bug
-
-- Looping search UI
-- Format the results
+x Looping search UI
+x Format the results
 - Handle related data
 
 x Print error if dataset is not correct
@@ -257,3 +255,15 @@ Prints the results
 
 
 
+
+
+## Formatting results
+
+
+## User
+
+_id: 1
+url: http://.....
+
+Total results: 27
+Results found in: 12ms

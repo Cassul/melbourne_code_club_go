@@ -83,7 +83,7 @@ func validateSearchQuery(searchQuery string) error {
 	return nil
 }
 
-func loadAndIndexData(ctx context.Context) map[types.Query][]types.Record {
+func loadAndIndexData(ctx context.Context) types.Index {
 	records := make(chan types.Record, 1)
 	var wg sync.WaitGroup
 
@@ -119,7 +119,7 @@ func loadAndIndexData(ctx context.Context) map[types.Query][]types.Record {
 		wg.Done()
 	}()
 
-	index := map[types.Query][]types.Record{}
+	index := types.Index{}
 	go func() {
 		wg.Wait()
 		close(records)
@@ -138,7 +138,13 @@ func loadAndIndexData(ctx context.Context) map[types.Query][]types.Record {
 	return index
 }
 
-func searchData(index map[types.Query][]types.Record, query types.Query) {
-	result := index[query]
-	fmt.Println("Result: ", result)
+func searchData(index types.Index, query types.Query) {
+	results := index[query]
+	// fmt.Println("Result: ", result)
+
+	for _, result := range results {
+		result.Print(index)
+	}
+
+	fmt.Println("Number of results", len(results))
 }
