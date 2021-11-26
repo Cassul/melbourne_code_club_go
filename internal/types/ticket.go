@@ -57,15 +57,13 @@ func (t Ticket) KeysForIndex() []Query {
 	return query
 }
 
-func (t Ticket) Print(index Index) {
+func (t Ticket) Print(index Index) string {
 	// TODO: Potentially a bug. What if the associated doesn't exist?
 	submitter := findOne(index, Query{Dataset: "users", Field: "_id", Value: t.SubmitterId})
 	assignee := findOne(index, Query{Dataset: "users", Field: "_id", Value: t.AssigneeId})
 	organization := findOne(index, Query{Dataset: "organizations", Field: "_id", Value: t.OrganizationId})
 
-	fmt.Println("## Ticket.")
-	t.PrintBasicInfo()
-	t.printAssociatedRecords(submitter, assignee, organization)
+	return fmt.Sprintf("## Ticket.\n%s\n%s", t.PrintBasicInfo(), t.printAssociatedRecords(submitter, assignee, organization))
 }
 
 func (t Ticket) PrintBasicInfo() string {
@@ -99,24 +97,22 @@ func (t Ticket) PrintBasicInfo() string {
 	return buf.String()
 }
 
-func (t Ticket) printAssociatedRecords(submitter Record, assignee Record, organization Record) {
+func (t Ticket) printAssociatedRecords(submitter Record, assignee Record, organization Record) string {
 	//sumitter
-	fmt.Println("### Submitter.")
-	fmt.Println(submitter.PrintBasicInfo())
-
+	submitterStr := fmt.Sprintf("### Submitter.\n%s\n", submitter.PrintBasicInfo())
+	var assigneeStr string
+	var organizationStr string
 	//assignee
 	if assignee != nil {
-		fmt.Println("### Assignee.")
-		fmt.Println(assignee.PrintBasicInfo())
-		fmt.Println("")
+		assigneeStr = fmt.Sprintf("### Assignee.\n%s\n", assignee.PrintBasicInfo())
 	}
 
 	//organization
 	if organization != nil {
-		fmt.Println("### Organization.")
-		fmt.Println(organization.PrintBasicInfo())
-		fmt.Println("")
+		organizationStr = fmt.Sprintf("### Organization.\n%s\n", organization.PrintBasicInfo())
 	}
+
+	return submitterStr + assigneeStr + organizationStr
 }
 
 func LoadTickets(ctx context.Context) []Ticket {

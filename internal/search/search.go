@@ -6,13 +6,15 @@ import (
 	"github.com/zendesk/melbourne_code_club_go/internal/types"
 )
 
-func SearchData(index types.Index, query types.Query) {
+func SearchData(index types.Index, query types.Query) string {
 	results := index[query]
-	// fmt.Println("Result: ", result)
 
+	var resultSum string
 	for _, result := range results {
-		result.Print(index)
+		resultSum = resultSum + result.Print(index) + "\n"
 	}
 
-	fmt.Println("Number of results", len(results))
+	resultSum = resultSum + fmt.Sprintln("Number of results ", len(results))
+
+	return resultSum
 }

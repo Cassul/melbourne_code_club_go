@@ -26,8 +26,8 @@ func LoadAndIndexData(ctx context.Context) types.Index {
 	go func() {
 		organizations := types.LoadOrganizations(ctx)
 
-		for _, u := range organizations {
-			records <- types.Record(u)
+		for _, o := range organizations {
+			records <- types.Record(o)
 		}
 
 		wg.Done()

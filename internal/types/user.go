@@ -62,21 +62,19 @@ func (u User) KeysForIndex() []Query {
 	return query
 }
 
-func (u User) Print(index Index) {
+func (u User) Print(index Index) string {
 	organization := findOne(index, Query{Dataset: "organizations", Field: "_id", Value: u.OrganizationId})
 
-	fmt.Println("## User.")
-	fmt.Println(u.PrintBasicInfo())
-	u.PrintAssociatedRecords(organization)
+	return fmt.Sprintf("## User.\n%s\n%s", u.PrintBasicInfo(), u.PrintAssociatedRecords(organization))
 }
 
-func (u User) PrintAssociatedRecords(organization Record) {
+func (u User) PrintAssociatedRecords(organization Record) string {
 	//organization
 	if organization != nil {
-		fmt.Println("### Organization.")
-		fmt.Println(organization.PrintBasicInfo())
-		fmt.Println("")
+		return fmt.Sprintf("### Organization.\n%s", organization.PrintBasicInfo())
 	}
+
+	return ""
 }
 
 func (u User) PrintBasicInfo() string {

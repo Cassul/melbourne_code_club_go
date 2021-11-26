@@ -39,7 +39,7 @@ func main() {
 			func() {
 				index = <-indexChannel
 			})
-		search.SearchData(index, query)
+		fmt.Println(search.SearchData(index, query))
 	}
 }
 

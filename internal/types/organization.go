@@ -46,9 +46,8 @@ func (o Organization) KeysForIndex() []Query {
 	return query
 }
 
-func (o Organization) Print(index Index) {
-	fmt.Println("## Organization.")
-	fmt.Println(o.PrintBasicInfo())
+func (o Organization) Print(index Index) string {
+	return fmt.Sprintf("## Organization.\n%s", o.PrintBasicInfo())
 }
 
 func (o Organization) PrintBasicInfo() string {
