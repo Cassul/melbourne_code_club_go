@@ -256,8 +256,9 @@ func (o Organization) KeysForIndex() []Query {
 	return query
 }
 
-func (u Organization) Print(index Index) {
-	fmt.Println("I am a organization.")
+func (o Organization) Print(index Index) {
+	fmt.Println("## Organization.")
+	o.PrintBasicInfo()
 }
 
 func (o Organization) PrintBasicInfo() {
