@@ -35,30 +35,34 @@ x Expand search to other datasets
 
 x Looping search UI
 x Format the results
-- Handle related data
+x Handle related data
 
 x Print error if dataset is not correct
 x Allow for search of tickets by ID
 
-- performance
+x performance
   - A list gives us O(n). N is the number of items in the list.
-  - Index by id {10: {name: "Mads", role: "admin"}}
+  x Index by id {10: {name: "Mads", role: "admin"}}
     - O(1)
 - Focus on
   - Design patterns. Reading Head first design patterns book.
     - Factory pattern
-  - Polymorphism
+  x Polymorphism
   - Object oriented ideas
-  - Goroutines. Advaned stuff that is too hard to maintain for normal code.
-    - Channels
-    - Error groups?
+    x Encapsulation
+    x Inheritance
+      - Instead use composition
+    x Polymorphism
+  x Goroutines. Advaned stuff that is too hard to maintain for normal code.
+    x Channels
+    x Error groups?
 x Create types folder to represent those data structures and use them for parsing
 x Go through challenge
 x Print error if not enough arguments given
 x Maybe: Try indexing using goroutines. Benchmark.
 x Print the arguments to the program
 x Get help flags working
-- Listen for signal interupted and kill and tidily close out goroutines
+x Listen for signal interupted and kill and tidily close out goroutines
 x Implement the loading using goroutines
 
 ## Interface

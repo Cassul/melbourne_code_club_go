@@ -11,7 +11,6 @@ import (
 
 	"github.com/manifoldco/promptui"
 
-	"github.com/zendesk/melbourne_code_club_go/internal/search_stuff"
 	"github.com/zendesk/melbourne_code_club_go/internal/types"
 )
 
@@ -85,16 +84,6 @@ func promptUser() (types.Query, error) {
 	return types.Query{Dataset: dataset, Field: field, Value: value}, nil
 }
 
-func search(tickets []types.Ticket, search_val string) []types.Ticket {
-	results := []types.Ticket{}
-	for _, ticket := range tickets {
-		if ticket.Id == search_val {
-			results = append(results, ticket)
-		}
-	}
-	return results
-}
-
 func validateSearchQuery(searchQuery string) error {
 	if !json.Valid([]byte(searchQuery)) {
 		return fmt.Errorf("Invalid search query, must be json")
@@ -109,7 +98,7 @@ func loadAndIndexData(ctx context.Context) types.Index {
 	wg.Add(3)
 
 	go func() {
-		users := search_stuff.LoadUsers(ctx)
+		users := types.LoadUsers(ctx)
 
 		for _, u := range users {
 			records <- types.Record(u)
@@ -119,7 +108,7 @@ func loadAndIndexData(ctx context.Context) types.Index {
 	}()
 
 	go func() {
-		organizations := search_stuff.LoadOrganizations(ctx)
+		organizations := types.LoadOrganizations(ctx)
 
 		for _, u := range organizations {
 			records <- types.Record(u)
@@ -129,7 +118,7 @@ func loadAndIndexData(ctx context.Context) types.Index {
 	}()
 
 	go func() {
-		tickets := search_stuff.LoadTickets(ctx)
+		tickets := types.LoadTickets(ctx)
 
 		for _, u := range tickets {
 			records <- types.Record(u)
