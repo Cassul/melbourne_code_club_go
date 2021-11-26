@@ -153,14 +153,18 @@ func (t Ticket) PrintAssociatedRecords(submitter Record, assignee Record, organi
 	submitter.PrintBasicInfo()
 
 	//assignee
-	fmt.Println("### Assignee.")
-	fmt.Println(assignee)
-	fmt.Println("")
+	if assignee != nil {
+		fmt.Println("### Assignee.")
+		assignee.PrintBasicInfo()
+		fmt.Println("")
+	}
 
 	//organization
-	fmt.Println("### Organization.")
-	fmt.Println(organization)
-	fmt.Println("")
+	if organization != nil {
+		fmt.Println("### Organization.")
+		organization.PrintBasicInfo()
+		fmt.Println("")
+	}
 }
 
 func (u User) KeysForIndex() []Query {
@@ -244,4 +248,13 @@ func (u Organization) Print(index Index) {
 	fmt.Println("I am a organization.")
 }
 
-func (o Organization) PrintBasicInfo() {}
+func (o Organization) PrintBasicInfo() {
+	fmt.Println("            _id: ", o.Id)
+	fmt.Println("    external_id: ", o.ExternalId)
+	fmt.Println("   domain_names: ", o.DomainNames)
+	fmt.Println("           name: ", o.Name)
+	fmt.Println("     created_at: ", o.CreatedAt)
+	fmt.Println(" shared_tickets: ", o.SharedTickets)
+	fmt.Println("           tags: ", o.Tags)
+	fmt.Println("        details: ", o.Details)
+}
