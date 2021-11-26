@@ -184,7 +184,6 @@ func (u User) KeysForIndex() []Query {
 		{Dataset: "users", Field: "email", Value: u.Email},
 		{Dataset: "users", Field: "phone", Value: u.Phone},
 		{Dataset: "users", Field: "signature", Value: u.Signature},
-		{Dataset: "users", Field: "organization_id", Value: u.OrganizationId},
 		{Dataset: "users", Field: "suspended", Value: u.Suspended},
 		{Dataset: "users", Field: "role", Value: u.Role},
 	}
@@ -197,7 +196,20 @@ func (u User) KeysForIndex() []Query {
 }
 
 func (u User) Print(index Index) {
-	fmt.Println("I am a user.")
+	organization := findOne(index, Query{Dataset: "organizations", Field: "_id", Value: u.OrganizationId})
+
+	fmt.Println("## User.")
+	u.PrintBasicInfo()
+	u.PrintAssociatedRecords(organization)
+}
+
+func (u User) PrintAssociatedRecords(organization Record) {
+	//organization
+	if organization != nil {
+		fmt.Println("### Organization.")
+		organization.PrintBasicInfo()
+		fmt.Println("")
+	}
 }
 
 func (u User) PrintBasicInfo() {
