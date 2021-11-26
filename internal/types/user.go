@@ -1,11 +1,13 @@
 package types
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
+	"text/template"
 )
 
 type User struct {
@@ -64,7 +66,7 @@ func (u User) Print(index Index) {
 	organization := findOne(index, Query{Dataset: "organizations", Field: "_id", Value: u.OrganizationId})
 
 	fmt.Println("## User.")
-	u.PrintBasicInfo()
+	fmt.Println(u.PrintBasicInfo())
 	u.PrintAssociatedRecords(organization)
 }
 
@@ -72,31 +74,45 @@ func (u User) PrintAssociatedRecords(organization Record) {
 	//organization
 	if organization != nil {
 		fmt.Println("### Organization.")
-		organization.PrintBasicInfo()
+		fmt.Println(organization.PrintBasicInfo())
 		fmt.Println("")
 	}
 }
 
-func (u User) PrintBasicInfo() {
-	fmt.Println("           _id: ", u.Id)
-	fmt.Println("           url: ", u.Url)
-	fmt.Println("   external_id: ", u.ExternalId)
-	fmt.Println("    created_at: ", u.CreatedAt)
-	fmt.Println("          type: ", u.Name)
-	fmt.Println("       subject: ", u.Alias)
-	fmt.Println("    desciption: ", u.Active)
-	fmt.Println("      priority: ", u.Verified)
-	fmt.Println("        status: ", u.Shared)
-	fmt.Println(" has_incidents: ", u.Locale)
-	fmt.Println("        due_at: ", u.Timezone)
-	fmt.Println("         email: ", u.Email)
-	fmt.Println(" last_login_at: ", u.LastLoginAt)
-	fmt.Println("         phone: ", u.Phone)
-	fmt.Println("     signature: ", u.Signature)
-	fmt.Println("          tags: ", u.Tags)
-	fmt.Println("     suspended: ", u.Suspended)
-	fmt.Println("          role: ", u.Role)
-	fmt.Println("")
+func (u User) PrintBasicInfo() string {
+	var buf bytes.Buffer
+
+	templateBody :=
+		`           _id: {{.Id}}
+	           url: {{.Url}}
+	   external_id: {{.ExternalId}}
+	    created_at: {{.CreatedAt}}
+	          type: {{.Name}}
+	       subject: {{.Alias}}
+	    desciption: {{.Active}}
+	      priority: {{.Verified}}
+	        status: {{.Shared}}
+	 has_incidents: {{.Locale}}
+	        due_at: {{.Timezone}}
+	         email: {{.Email}}
+	 last_login_at: {{.LastLoginAt}}
+	         phone: {{.Phone}}
+	     signature: {{.Signature}}
+	          tags: {{.Tags}}
+	     suspended: {{.Suspended}}
+	          role: {{.Role}}`
+	tmpl, err := template.New("test").Parse(templateBody)
+
+	if err != nil {
+		panic(err)
+	}
+
+	err = tmpl.Execute(&buf, u)
+	if err != nil {
+		panic(err)
+	}
+
+	return buf.String()
 }
 
 func LoadUsers(ctx context.Context) []User {

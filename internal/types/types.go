@@ -20,7 +20,7 @@ type Query struct {
 
 type Record interface {
 	Print(Index)
-	PrintBasicInfo()
+	PrintBasicInfo() string
 	KeysForIndex() []Query
 }
 

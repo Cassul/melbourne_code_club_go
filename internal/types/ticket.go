@@ -1,11 +1,13 @@
 package types
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
+	"text/template"
 )
 
 type Ticket struct {
@@ -66,38 +68,53 @@ func (t Ticket) Print(index Index) {
 	t.printAssociatedRecords(submitter, assignee, organization)
 }
 
-func (t Ticket) PrintBasicInfo() {
-	fmt.Println("          _id: ", t.Id)
-	fmt.Println("          url: ", t.Url)
-	fmt.Println("  external_id: ", t.ExternalId)
-	fmt.Println("   created_at: ", t.CreatedAt)
-	fmt.Println("         type: ", t.Type)
-	fmt.Println("      subject: ", t.Subject)
-	fmt.Println("   desciption: ", t.Description)
-	fmt.Println("     priority: ", t.Priority)
-	fmt.Println("       status: ", t.Status)
-	fmt.Println("has_incidents: ", t.HasIncidents)
-	fmt.Println("       due_at: ", t.DueAt)
-	fmt.Println("          via: ", t.Via)
-	fmt.Println("")
+func (t Ticket) PrintBasicInfo() string {
+	var buf bytes.Buffer
+
+	templateBody :=
+		`          _id:   {{.Id}}
+	          url:   {{.Url}}
+	  external_id:   {{.ExternalId}}
+	   created_at:   {{.CreatedAt}}
+	         type:   {{.Type}}
+	      subject:   {{.Subject}}
+	   desciption:   {{.Description}}
+	     priority:   {{.Priority}}
+	       status:   {{.Status}}
+	has_incidents:   {{.HasIncidents}}
+	       due_at:   {{.DueAt}}
+	          via:   {{.Via}}`
+
+	tmpl, err := template.New("test").Parse(templateBody)
+
+	if err != nil {
+		panic(err)
+	}
+
+	err = tmpl.Execute(&buf, t)
+	if err != nil {
+		panic(err)
+	}
+
+	return buf.String()
 }
 
 func (t Ticket) printAssociatedRecords(submitter Record, assignee Record, organization Record) {
 	//sumitter
 	fmt.Println("### Submitter.")
-	submitter.PrintBasicInfo()
+	fmt.Println(submitter.PrintBasicInfo())
 
 	//assignee
 	if assignee != nil {
 		fmt.Println("### Assignee.")
-		assignee.PrintBasicInfo()
+		fmt.Println(assignee.PrintBasicInfo())
 		fmt.Println("")
 	}
 
 	//organization
 	if organization != nil {
 		fmt.Println("### Organization.")
-		organization.PrintBasicInfo()
+		fmt.Println(organization.PrintBasicInfo())
 		fmt.Println("")
 	}
 }

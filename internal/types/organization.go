@@ -1,11 +1,13 @@
 package types
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
+	"text/template"
 )
 
 type Organization struct {
@@ -46,18 +48,35 @@ func (o Organization) KeysForIndex() []Query {
 
 func (o Organization) Print(index Index) {
 	fmt.Println("## Organization.")
-	o.PrintBasicInfo()
+	fmt.Println(o.PrintBasicInfo())
 }
 
-func (o Organization) PrintBasicInfo() {
-	fmt.Println("            _id: ", o.Id)
-	fmt.Println("    external_id: ", o.ExternalId)
-	fmt.Println("   domain_names: ", o.DomainNames)
-	fmt.Println("           name: ", o.Name)
-	fmt.Println("     created_at: ", o.CreatedAt)
-	fmt.Println(" shared_tickets: ", o.SharedTickets)
-	fmt.Println("           tags: ", o.Tags)
-	fmt.Println("        details: ", o.Details)
+func (o Organization) PrintBasicInfo() string {
+
+	var buf bytes.Buffer
+
+	templateBody :=
+		`		      _id: {{.Id}}
+	      external_id: {{.ExternalId}}
+  	   domain_names: {{.DomainNames}}
+	             name: {{.Name}}
+	       created_at: {{.CreatedAt}}
+	   shared_tickets: {{.SharedTickets}}
+	             tags: {{.Tags}}
+	          details: {{.Details}}`
+
+	tmpl, err := template.New("test").Parse(templateBody)
+
+	if err != nil {
+		panic(err)
+	}
+
+	err = tmpl.Execute(&buf, o)
+	if err != nil {
+		panic(err)
+	}
+
+	return buf.String()
 }
 
 func LoadOrganizations(ctx context.Context) []Organization {
