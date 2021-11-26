@@ -4,7 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
+	"os/signal"
 	"sync"
+	"syscall"
 
 	"github.com/manifoldco/promptui"
 
@@ -17,6 +20,8 @@ func main() {
 	indexChannel := make(chan types.Index)
 	var index types.Index
 	var syncOnce sync.Once
+	gracefulShutdown()
+
 	// Do this in the background
 	go func() {
 		indexChannel <- loadAndIndexData(ctx)
@@ -24,7 +29,13 @@ func main() {
 
 	// Loop these two
 	for {
-		query := promptUser()
+		query, err := promptUser()
+
+		if err != nil {
+			fmt.Println("Goodbye")
+			return
+		}
+
 		syncOnce.Do(
 			func() {
 				index = <-indexChannel
@@ -33,13 +44,17 @@ func main() {
 	}
 }
 
-func promptUser() types.Query {
+func promptUser() (types.Query, error) {
 	datasetPrompt := promptui.Select{
 		Label: "Select Data Type",
 		Items: []string{"tickets", "organizations", "users"},
 	}
 
 	_, dataset, err := datasetPrompt.Run()
+
+	if err != nil {
+		return types.Query{}, err
+	}
 
 	acceptedFields := types.DataTypes[dataset]
 
@@ -49,6 +64,10 @@ func promptUser() types.Query {
 	}
 	_, field, err := fieldPrompt.Run()
 
+	if err != nil {
+		return types.Query{}, err
+	}
+
 	inputValuePrompt := promptui.Prompt{
 		Label:    "What are you searching for, dear User?",
 		Validate: validateSearchQuery,
@@ -57,13 +76,13 @@ func promptUser() types.Query {
 	inputValue, err := inputValuePrompt.Run()
 
 	if err != nil {
-		panic(fmt.Sprintf("Prompt failed, err - %v", err))
+		return types.Query{}, err
 	}
 
 	var value interface{}
 	json.Unmarshal([]byte(inputValue), &value)
 
-	return types.Query{Dataset: dataset, Field: field, Value: value}
+	return types.Query{Dataset: dataset, Field: field, Value: value}, nil
 }
 
 func search(tickets []types.Ticket, search_val string) []types.Ticket {
@@ -147,4 +166,14 @@ func searchData(index types.Index, query types.Query) {
 	}
 
 	fmt.Println("Number of results", len(results))
+}
+
+func gracefulShutdown() {
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+	go func() {
+		sig := <-sigs
+		fmt.Println("got a signal - ", sig)
+	}()
+	fmt.Println("awaiting signal")
 }
